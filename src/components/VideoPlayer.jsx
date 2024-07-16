@@ -141,7 +141,7 @@ const VideoPlayer = ({ onTimeUpdate, markers, addMarker, deleteMarker }) => {
             {markers.map((marker, index) => (
               <Group key={index}>
                 {marker.type === 'rect' ? (
-                  <Rect x={marker.x} y={marker.y} width={marker.width} height={marker.height} stroke="red" />
+                  <Rect x={marker.x} y={marker.y} width={marker.width} height={marker.height} stroke="blue" />
                 ) : (
                   <Circle x={marker.x} y={marker.y} radius={marker.radius} stroke="red" />
                 )}
@@ -157,7 +157,7 @@ const VideoPlayer = ({ onTimeUpdate, markers, addMarker, deleteMarker }) => {
             ))}
             {newShape &&
               (newShape.type === 'rect' ? (
-                <Rect x={newShape.x} y={newShape.y} width={newShape.width} height={newShape.height} stroke="blue" />
+                <Rect x={newShape.x} y={newShape.y} width={newShape.width} height={newShape.height} stroke="red" />
               ) : (
                 <Circle x={newShape.x} y={newShape.y} radius={newShape.radius} stroke="blue" />
               ))}
