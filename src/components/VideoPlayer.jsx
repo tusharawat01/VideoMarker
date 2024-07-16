@@ -3,7 +3,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Stage, Layer, Rect, Circle, Text, Group } from 'react-konva';
 
-const VideoPlayerWithCanvas = ({ onTimeUpdate, markers, addMarker, deleteMarker }) => {
+const VideoPlayer = ({ onTimeUpdate, markers, addMarker, deleteMarker }) => {
   const videoRef = useRef(null);
   const containerRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -17,11 +17,64 @@ const VideoPlayerWithCanvas = ({ onTimeUpdate, markers, addMarker, deleteMarker 
     }
   };
 
+//   useEffect(() => {
+//     const video = videoRef.current;
+//     if (video) {
+//       video.addEventListener('loadedmetadata', () => {
+//         const aspectRatio = video.videoWidth / video.videoHeight;
+//         const maxWidth = containerRef.current.clientWidth;
+//         const maxHeight = containerRef.current.clientHeight;
+
+//         let width = maxWidth;
+//         let height = maxWidth / aspectRatio;
+
+//         if (height > maxHeight) {
+//           height = maxHeight;
+//           width = maxHeight * aspectRatio;
+//         }
+
+//         setVideoDimensions({
+//           width: width,
+//           height: height,
+//         });
+//       });
+//     }
+//   }, []);
 
   const handleMouseDown = (e) => {
+    startDrawing(e.target.getStage().getPointerPosition());
+  };
+
+  const handleMouseMove = (e) => {
+    if (isDrawing) {
+      continueDrawing(e.target.getStage().getPointerPosition());
+    }
+  };
+
+  const handleMouseUp = () => {
+    finishDrawing();
+  };
+
+  const handleTouchStart = (e) => {
+    e.preventDefault();
+    startDrawing(e.target.getStage().getPointerPosition());
+  };
+
+  const handleTouchMove = (e) => {
+    e.preventDefault();
+    if (isDrawing) {
+      continueDrawing(e.target.getStage().getPointerPosition());
+    }
+  };
+
+  const handleTouchEnd = (e) => {
+    e.preventDefault();
+    finishDrawing();
+  };
+
+  const startDrawing = ({ x, y }) => {
     if (!shapeType) return;
     setIsDrawing(true);
-    const { x, y } = e.target.getStage().getPointerPosition();
     if (shapeType === 'rect') {
       setNewShape({ x, y, width: 0, height: 0, type: 'rect' });
     } else if (shapeType === 'circle') {
@@ -29,9 +82,8 @@ const VideoPlayerWithCanvas = ({ onTimeUpdate, markers, addMarker, deleteMarker 
     }
   };
 
-  const handleMouseMove = (e) => {
+  const continueDrawing = ({ x, y }) => {
     if (!isDrawing || !newShape) return;
-    const { x, y } = e.target.getStage().getPointerPosition();
     if (shapeType === 'rect') {
       setNewShape({ ...newShape, width: x - newShape.x, height: y - newShape.y });
     } else if (shapeType === 'circle') {
@@ -39,7 +91,7 @@ const VideoPlayerWithCanvas = ({ onTimeUpdate, markers, addMarker, deleteMarker 
     }
   };
 
-  const handleMouseUp = () => {
+  const finishDrawing = () => {
     setIsDrawing(false);
     if (newShape) {
       addMarker(newShape);
@@ -52,7 +104,7 @@ const VideoPlayerWithCanvas = ({ onTimeUpdate, markers, addMarker, deleteMarker 
   };
 
   return (
-    <div>
+    <div style={{ width: '100%', height: '100%', position: 'relative' }}>
       <input
         type="file"
         accept="video/*"
@@ -67,20 +119,23 @@ const VideoPlayerWithCanvas = ({ onTimeUpdate, markers, addMarker, deleteMarker 
         <button onClick={() => toggleShapeType('rect')} style={{ backgroundColor: shapeType === 'rect' ? 'lightblue' : '' }}>Rectangle</button>
         <button onClick={() => toggleShapeType('circle')} style={{ backgroundColor: shapeType === 'circle' ? 'lightblue' : '' }}>Circle</button>
       </div>
-      <div ref={containerRef} style={{ position: 'relative', width: videoDimensions.width, height: videoDimensions.height }}>
+      <div ref={containerRef} style={{ width: '100%', height: '100%', position: 'relative' }}>
         <video
           ref={videoRef}
           controls
           onTimeUpdate={handleTimeUpdate}
-          style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1 }}
+          style={{ position: 'absolute', top: '0', left: '0', width: `${videoDimensions.width}px`, height: `${videoDimensions.height}px`, maxWidth: '100%', maxHeight: '100%', zIndex: 1 }}
         />
         <Stage
           width={videoDimensions.width}
           height={videoDimensions.height}
-          style={{ position: 'absolute', top: 0, left: 0, zIndex: 2, pointerEvents: shapeType ? 'auto' : 'none' }}
+          style={{ position: 'absolute', top: '0', left: '0', zIndex: 2, pointerEvents: shapeType ? 'auto' : 'none' }}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
         >
           <Layer>
             {markers.map((marker, index) => (
@@ -113,4 +168,4 @@ const VideoPlayerWithCanvas = ({ onTimeUpdate, markers, addMarker, deleteMarker 
   );
 };
 
-export default VideoPlayerWithCanvas;
+export default VideoPlayer;
