@@ -1,5 +1,3 @@
-// src/App.jsx
-
 import React, { useState } from 'react';
 import VideoPlayer from './components/VideoPlayer';
 
@@ -20,12 +18,13 @@ const App = () => {
   };
 
   return (
-    <div style={{ width: '100vw', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    <div style={{ width: '100vw', height: '100vh', display: 'flex' }}>
       <VideoPlayer
         onTimeUpdate={handleTimeUpdate}
-        markers={markers.filter((marker) => currentTime >= marker.time && currentTime <= marker.time + 5)}
+        markers={markers}
         addMarker={addMarker}
         deleteMarker={deleteMarker}
+        setCurrentTime={setCurrentTime}
       />
     </div>
   );
