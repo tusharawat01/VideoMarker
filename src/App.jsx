@@ -18,7 +18,8 @@ const App = () => {
   };
 
   return (
-    <div style={{ width: '100vw', height: '100vh', display: 'flex' }}>
+    <div className="w-screen h-screen bg-gray-200 flex items-center justify-center p-5">
+      
       <VideoPlayer
         onTimeUpdate={handleTimeUpdate}
         markers={markers}
